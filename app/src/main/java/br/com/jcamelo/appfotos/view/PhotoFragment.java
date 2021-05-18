@@ -235,6 +235,7 @@ public class PhotoFragment extends AbstractFragment {
     }
 
     private void dispatchTakePictureIntent(String nameFile, String folder) {
+        Integer tipo = 1;
         File storageDir = getActivity().getExternalFilesDir(folder);
         File photoFile = new File(storageDir, nameFile);
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -247,20 +248,22 @@ public class PhotoFragment extends AbstractFragment {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
                 //Gravando Item OS
-                gravarItemOs(nameFile);
+                gravarItemOs(nameFile, tipo);
             }
         }
     }
 
-    private void gravarItemOs(String nameFile) {
+    private void gravarItemOs(String nameFile, Integer tipo) {
         OrdemServicoItem ordemServicoItem = new OrdemServicoItem();
         ordemServicoItem.setCodigoOs(descriptionsPhoto.getOs());
         ordemServicoItem.setArquivo(nameFile);
         ordemServicoItem.setSiglaEquipamento(descriptionsPhoto.getInitials());
+        ordemServicoItem.setTipo(tipo);
         ordemServicoItem.save();
     }
 
     private void dispatchTakeVideoIntent() {
+        //Integer tipo = 2;
         File storageDir = getActivity().getExternalFilesDir("Video");
         File videoFile = new File(storageDir, nameVideo());
         badFile = videoFile;
@@ -274,6 +277,9 @@ public class PhotoFragment extends AbstractFragment {
                 takeVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
                 takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoURI);
                 startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+
+//                //Gravando Item OS
+//                gravarItemOs(nameVideo(), tipo);
             }
         }
     }
@@ -285,7 +291,7 @@ public class PhotoFragment extends AbstractFragment {
         File[] files = directory.listFiles();
 
         List<OrdemServicoItem> itemsOs;
-        itemsOs = OrdemServicoItem.getAllByOS(descriptionsPhoto.getOs(), descriptionsPhoto.getInitials());
+        itemsOs = OrdemServicoItem.getAllByOS(descriptionsPhoto.getOs(), descriptionsPhoto.getInitials(), 1);
 
         for (int i = 0; i < files.length; i++) {
             String[] segments = files[i].toString().split("/");
@@ -318,15 +324,26 @@ public class PhotoFragment extends AbstractFragment {
         String path = getActivity().getExternalFilesDir("Video").toString();
         File directory = new File(path);
         File[] files = directory.listFiles();
+        List<OrdemServicoItem> itemsOs;
 
-        for (int i = 0; i < files.length; i++) {
-            list.add(files[i]);
+        if(descriptionsPhoto.getOs() != null){
+            if(descriptionsPhoto.getOs() != null) {
+                for (int i = 0; i < files.length; i++) {
+                    String[] segments = files[i].toString().split("/");
+                    String nomeArquivo = segments[segments.length - 1];
+
+                    if(nomeArquivo.startsWith(descriptionsPhoto.getOs())) {
+                        list.add(files[i]);
+                    }
+                }
+            }
         }
 
         return list;
     }
 
     private void createTxtFile() {
+        //Integer tipo = 3;
         if (!obs.getText().toString().isEmpty()) {
             String date = new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date());
             String nameTxt = getActivity().getExternalFilesDir("Texto") + "/"
@@ -342,6 +359,8 @@ public class PhotoFragment extends AbstractFragment {
                         new OutputStreamWriter(fOut);
                 myOutWriter.append(obs.getText().toString());
                 myOutWriter.close();
+
+                //gravarItemOs(nameTxt, tipo);
             } catch (Exception e) {
                 Toast.makeText(getContext(), "Error Arquivo de texto não criado", Toast.LENGTH_SHORT).show();
             }
@@ -355,8 +374,17 @@ public class PhotoFragment extends AbstractFragment {
         String path = getActivity().getExternalFilesDir("Texto").toString();
         File directory = new File(path);
         File[] files = directory.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            list.add(files[i]);
+        List<OrdemServicoItem> itemsOs;
+
+        if(descriptionsPhoto.getOs() != null) {
+            for (int i = 0; i < files.length; i++) {
+                String[] segments = files[i].toString().split("/");
+                String nomeArquivo = segments[segments.length - 1];
+
+                if(nomeArquivo.startsWith(descriptionsPhoto.getOs())) {
+                    list.add(files[i]);
+                }
+            }
         }
 
         return list;
