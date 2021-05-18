@@ -134,6 +134,25 @@ public class OrdemServicoItem extends RealmObject{
         return novoCliente;
     }
 
+    public static List<OrdemServicoItem> findAll(){
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        RealmResults<OrdemServicoItem> clients = realm.where(OrdemServicoItem.class)
+                .findAll();
+        List<OrdemServicoItem> orderServicoItemList = new ArrayList<>();
+
+        for (int i = 0; i < clients.size();i++){
+            OrdemServicoItem c = new OrdemServicoItem(clients.get(i).getId(),clients.get(i).getCodigoOs(),clients.get(i).getArquivo(), clients.get(i).getSiglaEquipamento());
+            orderServicoItemList.add(c);
+        }
+
+        realm.commitTransaction();
+        realm.close();
+
+        return orderServicoItemList;
+    }
+
     public static List<OrdemServicoItem> getAllByOS(String codigoOs, String siglaEquipamento){
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();

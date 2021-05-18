@@ -1,6 +1,7 @@
 package br.com.jcamelo.appfotos.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -121,14 +122,6 @@ public class PhotoFragment extends AbstractFragment {
             fragmentTransaction.commit();
 
         });
-
-
-        /*List<OrdemServicoItem> items = OrdemServicoItem.getAllByOS(descriptionsPhoto.getOs());
-        if(items.size() > 0) {
-            for (int i = 0; i <= items.size(); i++) {
-                Log.d("TESTE", items.get(i).toString());
-            }
-        }*/
 
         return view;
     }
@@ -411,13 +404,25 @@ public class PhotoFragment extends AbstractFragment {
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
 
             holder.descPhoto.setText(category);
+
+            if(searchFilePhoto(category).size() > 0) {
+                holder.cardView.setCardBackgroundColor(Color.parseColor("#8B0000"));
+                holder.descPhoto.setTextColor(Color.WHITE);
+            }
+
             holder.cardView.setOnClickListener(v -> {
                 if (holder.camera.getVisibility() != View.VISIBLE) {
                     holder.camera.setVisibility(View.VISIBLE);
                     holder.recyclerView.setVisibility(View.VISIBLE);
+
+                    holder.cardView.setCardBackgroundColor(Color.WHITE);
+                    holder.descPhoto.setTextColor(Color.BLACK);
                 } else {
                     holder.camera.setVisibility(View.GONE);
                     holder.recyclerView.setVisibility(View.GONE);
+
+                    holder.cardView.setCardBackgroundColor(Color.parseColor("#8B0000"));
+                    holder.descPhoto.setTextColor(Color.WHITE);
                 }
             });
 
