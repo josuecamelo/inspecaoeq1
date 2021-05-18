@@ -91,10 +91,12 @@ public class UserFragment extends AbstractFragment {
     private void moveFragment(){
         Bundle bundle = new Bundle();
         bundle.putString("user", nameUser.getText().toString());
+
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         EquipmentFragment equipmentFragment = new EquipmentFragment();
         equipmentFragment.setArguments(bundle);
+
         fragmentTransaction.addToBackStack("home");
         fragmentTransaction.replace(R.id.main_frame_layout, equipmentFragment);
         fragmentTransaction.commit();

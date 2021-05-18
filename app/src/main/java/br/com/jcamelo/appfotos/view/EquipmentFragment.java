@@ -89,8 +89,10 @@ public class EquipmentFragment extends AbstractFragment {
 
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
                 OsFragment osFragment = new OsFragment();
                 osFragment.setArguments(bundle);
+
                 fragmentTransaction.addToBackStack("equip");
                 fragmentTransaction.replace(R.id.main_frame_layout, osFragment);
                 fragmentTransaction.commit();

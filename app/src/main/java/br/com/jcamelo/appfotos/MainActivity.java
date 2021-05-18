@@ -3,6 +3,7 @@ package br.com.jcamelo.appfotos;
 import android.Manifest;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,8 +11,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
+import java.util.List;
 
+import br.com.jcamelo.appfotos.database.OrdemServico;
 import br.com.jcamelo.appfotos.view.UserFragment;
+import io.realm.OrderedCollectionChangeSet;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         onInject();
-
     }
 
     private void onInject() {

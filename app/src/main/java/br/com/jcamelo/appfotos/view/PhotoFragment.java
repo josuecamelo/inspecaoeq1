@@ -38,6 +38,7 @@ import java.util.List;
 
 import br.com.jcamelo.appfotos.MainActivity;
 import br.com.jcamelo.appfotos.R;
+import br.com.jcamelo.appfotos.database.OrdemServicoItem;
 import br.com.jcamelo.appfotos.model.AbstractFragment;
 import br.com.jcamelo.appfotos.model.DescriptionsPhoto;
 
@@ -114,11 +115,21 @@ public class PhotoFragment extends AbstractFragment {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             SendFileFragment sendFileFragment = new SendFileFragment();
+
             fragmentTransaction.addToBackStack("photo");
             fragmentTransaction.replace(R.id.main_frame_layout, sendFileFragment);
             fragmentTransaction.commit();
 
         });
+
+
+        /*List<OrdemServicoItem> items = OrdemServicoItem.getAllByOS(descriptionsPhoto.getOs());
+        if(items.size() > 0) {
+            for (int i = 0; i <= items.size(); i++) {
+                Log.d("TESTE", items.get(i).toString());
+            }
+        }*/
+
         return view;
     }
 
@@ -241,8 +252,19 @@ public class PhotoFragment extends AbstractFragment {
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+                //Gravando Item OS
+                gravarItemOs(nameFile);
             }
         }
+    }
+
+    private void gravarItemOs(String nameFile) {
+        OrdemServicoItem ordemServicoItem = new OrdemServicoItem();
+        ordemServicoItem.setCodigoOs(descriptionsPhoto.getOs());
+        ordemServicoItem.setArquivo(nameFile);
+        ordemServicoItem.setSiglaEquipamento(descriptionsPhoto.getInitials());
+        ordemServicoItem.save();
     }
 
     private void dispatchTakeVideoIntent() {
@@ -268,9 +290,19 @@ public class PhotoFragment extends AbstractFragment {
         String path = getActivity().getExternalFilesDir(folder).toString();
         File directory = new File(path);
         File[] files = directory.listFiles();
-        Log.d("Files", "Size: " + files.length);
+
+        List<OrdemServicoItem> itemsOs;
+        itemsOs = OrdemServicoItem.getAllByOS(descriptionsPhoto.getOs(), descriptionsPhoto.getInitials());
+
         for (int i = 0; i < files.length; i++) {
-            list.add(files[i]);
+            String[] segments = files[i].toString().split("/");
+            String nomeArquivo = segments[segments.length-1];
+
+            for (OrdemServicoItem item: itemsOs) {
+                if(item.getArquivo().equals(nomeArquivo)){
+                    list.add(files[i]);
+                }
+            }
         }
 
         return list;
@@ -278,7 +310,6 @@ public class PhotoFragment extends AbstractFragment {
 
     private void deleteFile(File file) {
         file.delete();
-
     }
 
     private String nameVideo() {
@@ -294,6 +325,7 @@ public class PhotoFragment extends AbstractFragment {
         String path = getActivity().getExternalFilesDir("Video").toString();
         File directory = new File(path);
         File[] files = directory.listFiles();
+
         for (int i = 0; i < files.length; i++) {
             list.add(files[i]);
         }
@@ -373,6 +405,7 @@ public class PhotoFragment extends AbstractFragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolderPhoto holder, int position) {
             String category = stringList.get(position);
+            //Log.d("TESTES", "CATEGORIA SELECIONADA " + category);
             ItemAdapter itemAdapter = new ItemAdapter(searchFilePhoto(category));
             holder.recyclerView.setAdapter(itemAdapter);
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
@@ -450,6 +483,8 @@ public class PhotoFragment extends AbstractFragment {
                 }));
                 alertDialog.setPositiveButton("DELETAR", ((dialog, which) -> {
                     deleteFile(file);
+                    OrdemServicoItem arquivoDeletar = OrdemServicoItem.findByName(file.getName());
+                    arquivoDeletar.delete();
                     photoAdapter.notifyDataSetChanged();
                     dialog.cancel();
                 }));

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import br.com.jcamelo.appfotos.MainActivity;
 import br.com.jcamelo.appfotos.R;
+import br.com.jcamelo.appfotos.database.OrdemServico;
 import br.com.jcamelo.appfotos.model.AbstractFragment;
 
 public class OsFragment extends AbstractFragment {
@@ -93,20 +95,44 @@ public class OsFragment extends AbstractFragment {
         return R.layout.fragment_os;
     }
 
-
+    /*
+    * Ir para Próximo Fragment
+    *
+    * */
     public void moveFragment(){
         Bundle bundle = new Bundle();
         bundle.putString("equip", getArguments().getString("equip"));
         bundle.putString("user", getArguments().getString("user"));
         bundle.putString("os", os.getText().toString());
+
+        //salvando os no banco
+        gravarOrdemServico(os.getText().toString(), getArguments().getString("user"));
+
+        //Configuraçoes do Fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
         PhotoFragment photoFragment = new PhotoFragment();
         photoFragment.setArguments(bundle);
+
         fragmentTransaction.addToBackStack("os");
         fragmentTransaction.replace(R.id.main_frame_layout, photoFragment);
         fragmentTransaction.commit();
     }
 
+    /*
+    * Método Criação de Ordem de Serviço no BD
+    * */
+    protected void gravarOrdemServico(String codigo, String usuario){
+        OrdemServico ordemServico = new OrdemServico();
 
+        //buscando a os pelo identificador
+        OrdemServico os = OrdemServico.findByCodigo(codigo);
+
+        if(os == null){
+            ordemServico.setCodigo("OS-" + codigo);
+            ordemServico.setTecnico(usuario);
+            ordemServico.save();
+        }
+    }
 }
