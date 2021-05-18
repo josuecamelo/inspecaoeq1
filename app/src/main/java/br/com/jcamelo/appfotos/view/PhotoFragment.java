@@ -421,8 +421,10 @@ public class PhotoFragment extends AbstractFragment {
                     holder.camera.setVisibility(View.GONE);
                     holder.recyclerView.setVisibility(View.GONE);
 
-                    holder.cardView.setCardBackgroundColor(Color.parseColor("#8B0000"));
-                    holder.descPhoto.setTextColor(Color.WHITE);
+                    if(searchFilePhoto(category).size() > 0) {
+                        holder.cardView.setCardBackgroundColor(Color.parseColor("#8B0000"));
+                        holder.descPhoto.setTextColor(Color.WHITE);
+                    }
                 }
             });
 
@@ -432,9 +434,9 @@ public class PhotoFragment extends AbstractFragment {
                         "_" + descriptionsPhoto.getUser() + "_" + String.valueOf(position + 1) + "_";
                 String nameFileComplete = nameFile + date + ".jpg";
                 dispatchTakePictureIntent(nameFileComplete, category);
+
                 holder.camera.setVisibility(View.GONE);
                 holder.recyclerView.setVisibility(View.GONE);
-
             });
 
         }
