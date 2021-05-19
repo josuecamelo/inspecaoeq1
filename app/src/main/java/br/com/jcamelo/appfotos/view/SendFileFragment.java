@@ -41,6 +41,7 @@ public class SendFileFragment extends AbstractFragment {
     private String displayPorc;
     private Toolbar toolbar;
     private static final int porCent = 100;
+    private String ordermServicoCodigo;
 
 
     public SendFileFragment(){
@@ -60,11 +61,15 @@ public class SendFileFragment extends AbstractFragment {
         check = view.findViewById(R.id.image_view_check);
         toolbar = getActivity().findViewById(R.id.toolbar);
 
+        if (getArguments() != null) {
+            ordermServicoCodigo = getArguments().getString("os");
+            Log.d("TESTE", ordermServicoCodigo);
+        }
+
         fileListAll = searchFileSend();
 
         conectFTP = new ClassFtp();
         SendAsync sendAsync = new SendAsync();
-
 
         buttonSendFtp.setOnClickListener(v -> {
             if (fileListAll.size() != 0) {
@@ -106,22 +111,26 @@ public class SendFileFragment extends AbstractFragment {
         protected String doInBackground(String... strings) {
             boolean access = conectFTP.connect("ftp.armonive.net.br", "appfotos@armonive.net.br",
                     "M5M(;bDf.tOn", 21);
-            if (access) {
-                for (int i = 0; i < fileListAll.size(); i++) {
-                    boolean isSent = conectFTP.upload(fileListAll.get(i).getPath(), fileListAll.get(i).getName());
-                    int numberDisplay = (porCent * i) / (fileListAll.size());
-                    displayPorc = "Enviando: " + numberDisplay + "%";
-                    publishProgress(displayPorc);
-                    if (isSent) {
-                        deleteFile(fileListAll.get(i));
+            try {
+                if (access) {
+                    for (int i = 0; i < fileListAll.size(); i++) {
+                        boolean isSent = conectFTP.upload(fileListAll.get(i).getPath(), fileListAll.get(i).getName());
+                        int numberDisplay = (porCent * i) / (fileListAll.size());
+                        displayPorc = "Enviando: " + numberDisplay + "%";
+                        publishProgress(displayPorc);
+                        if (isSent) {
+                            deleteFile(fileListAll.get(i));
 
-                    } else {
-                        Toast.makeText(getContext(), "Arquivo: " + fileListAll.get(i).getName()
-                                        + " não pode ser deletado",
-                                Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Arquivo: " + fileListAll.get(i).getName()
+                                            + " não pode ser deletado",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
+                    conectFTP.disconnect();
                 }
-                conectFTP.disconnect();
+            } catch (Exception e){
+                Log.d("TESTE", e.getMessage());
             }
             return null;
         }
@@ -162,18 +171,25 @@ public class SendFileFragment extends AbstractFragment {
     private List<File> searchFileSend() {
         List<File> list = new ArrayList<>();
         String[] folder = getResources().getStringArray(R.array.folder);
-        for (int i = 0; i < folder.length; i++) {
-            String path = getActivity().getExternalFilesDir(folder[i]).toString();
-            File directory = new File(path);
-            File[] files = directory.listFiles();
+        if(ordermServicoCodigo != null) {
+            for (int i = 0; i < folder.length; i++) {
+                String path = getActivity().getExternalFilesDir(folder[i]).toString();
+                File directory = new File(path);
+                File[] files = directory.listFiles();
 
-            for (File file : files) {
-                list.add(file);
+                for (File file : files) {
+                    String[] segments = file.toString().split("/");
+                    String nomeArquivo = segments[segments.length - 1];
+
+                    if (nomeArquivo.startsWith(ordermServicoCodigo)) {
+                        list.add(file);
+                    }
+                }
             }
-        }
 
-        String sizeList = "Você tem: " + list.size() + " arquivo para enviar";
-        status.setText(sizeList);
+            String sizeList = "Você tem: " + list.size() + " arquivo para enviar";
+            status.setText(sizeList);
+        }
         return list;
     }
 

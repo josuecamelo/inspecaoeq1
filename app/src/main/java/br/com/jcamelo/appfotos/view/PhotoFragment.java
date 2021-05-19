@@ -115,9 +115,13 @@ public class PhotoFragment extends AbstractFragment {
         });
 
         send.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("os", descriptionsPhoto.getOs());
+
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             SendFileFragment sendFileFragment = new SendFileFragment();
+            sendFileFragment.setArguments(bundle);
 
             fragmentTransaction.addToBackStack("photo");
             fragmentTransaction.replace(R.id.main_frame_layout, sendFileFragment);
