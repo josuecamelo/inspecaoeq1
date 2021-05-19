@@ -78,7 +78,7 @@ public class UserFragment extends AbstractFragment {
     @Override
     public void onResume() {
         super.onResume();
-        toolbar.setTitle("AppFotos");
+        toolbar.setTitle("Ajel Fotos v1.0");
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }

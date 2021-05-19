@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setTitle("Teste");
 
         userFragment = new UserFragment();
         FragmentManager fm = getSupportFragmentManager();
