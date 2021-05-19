@@ -110,7 +110,7 @@ public class SendFileFragment extends AbstractFragment {
                 for (int i = 0; i < fileListAll.size(); i++) {
                     boolean isSent = conectFTP.upload(fileListAll.get(i).getPath(), fileListAll.get(i).getName());
                     int numberDisplay = (porCent * i) / (fileListAll.size());
-                    displayPorc = "Eviando: " + numberDisplay + "%";
+                    displayPorc = "Enviando: " + numberDisplay + "%";
                     publishProgress(displayPorc);
                     if (isSent) {
                         deleteFile(fileListAll.get(i));

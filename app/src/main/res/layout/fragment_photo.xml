@@ -34,6 +34,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/recycler_view_txt" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_clear"
+                android:backgroundTint="@color/red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/clear"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_send" />
+
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_video"
                 android:layout_width="match_parent"

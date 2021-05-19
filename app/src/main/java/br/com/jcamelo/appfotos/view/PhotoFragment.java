@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
@@ -53,7 +55,7 @@ public class PhotoFragment extends AbstractFragment {
     private VideoAdapter videoAdapter;
     private TextAdapter textAdapter;
     private RecyclerView recyclerViewPhoto, recyclerViewVideo, recyclerViewText;
-    private MaterialButton send, captureVideo, generatorTxt;
+    private MaterialButton send, captureVideo, generatorTxt, clear;
     private Toolbar toolbar;
     private TextInputEditText obs;
     private File badFile;
@@ -75,6 +77,7 @@ public class PhotoFragment extends AbstractFragment {
         textViewOS = view.findViewById(R.id.text_view_os);
         recyclerViewText = view.findViewById(R.id.recycler_view_txt);
         toolbar = getActivity().findViewById(R.id.toolbar);
+        clear = view.findViewById(R.id.button_clear);
 
         descriptionsPhoto = new DescriptionsPhoto();
 
@@ -122,7 +125,45 @@ public class PhotoFragment extends AbstractFragment {
 
         });
 
+        clear.setOnClickListener(v -> {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+            alertDialog.setTitle("Excluir Dados da Ordem Serviço");
+            alertDialog.setMessage("Deseja realmente remover todos os arquivo desta Ordem de Serviço?");
+            alertDialog.setNeutralButton("Cancelar", ((dialog, which) -> {
+                dialog.cancel();
+            }));
+            alertDialog.setPositiveButton("Sim", ((dialog, which) -> {
+                removerArquivos();
+                Toast.makeText(getContext(), "Arquivos Removidos Com Sucesso!", Toast.LENGTH_LONG).show();
+                dialog.cancel();
+            }));
+
+            alertDialog.create().show();
+        });
+
         return view;
+    }
+
+    private void removerArquivos() {
+        String[] folder = getResources().getStringArray(R.array.folder);
+        try {
+            for (int i = 0; i < folder.length; i++) {
+                String path = getActivity().getExternalFilesDir(folder[i]).toString();
+                File directory = new File(path);
+                File[] files = directory.listFiles();
+
+                for (File file : files) {
+                    String[] segments = file.toString().split("/");
+                    String nomeArquivo = segments[segments.length - 1];
+
+                    if (nomeArquivo.startsWith(descriptionsPhoto.getOs())) {
+                        file.delete();
+                    }
+                }
+            }
+        } catch (Exception e){
+            Log.d("TESTE", e.getMessage());
+        }
     }
 
     @Override
