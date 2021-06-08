@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.jcamelo.appfotos.Constants;
 import br.com.jcamelo.appfotos.MainActivity;
 import br.com.jcamelo.appfotos.R;
 import br.com.jcamelo.appfotos.model.AbstractFragment;
@@ -109,8 +110,11 @@ public class SendFileFragment extends AbstractFragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            boolean access = conectFTP.connect("ftp.armonive.net.br", "appfotos@armonive.net.br",
-                    "M5M(;bDf.tOn", 21);
+            boolean access = conectFTP.connect(
+                    Constants.hostFtp,
+                    Constants.usuarioFtp,
+                    Constants.senhaFtp,
+                    21);
             try {
                 if (access) {
                     for (int i = 0; i < fileListAll.size(); i++) {
